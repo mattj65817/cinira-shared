@@ -115,7 +115,7 @@ async function decryptPrivateKey(data: Buffer, passphrase: string) {
  */
 function extractSection(pem: string, name: string) {
   const lines = pem.split(newline);
-  const beginIndex = lines.findIndex((line) => line.startsWith('-----BEGIN ') && line.endsWith(` ${name}-----`));
+  const beginIndex = lines.findIndex(next => next.startsWith('-----BEGIN ') && next.endsWith(` ${name}-----`));
   if (-1 === beginIndex) {
     throw Error(`Section [${name}] not found in PEM content.`);
   }

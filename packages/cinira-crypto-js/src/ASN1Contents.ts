@@ -1,4 +1,5 @@
-import { freeze } from 'immer';
+import {freeze} from 'immer';
+import _ from "lodash";
 
 /**
  * Parse the raw contents of an ASN.1 buffer into separate arrays if numbers, OIDs, and byte strings. Borrows (very
@@ -9,35 +10,33 @@ import { freeze } from 'immer';
  * @param oids the output array to receive parsed OIDs.
  * @param strings the output array to receive parsed byte strings.
  */
-function parseASN1(buffer: Buffer, numbers: Array<number>, oids: Array<Buffer>, strings: Array<Buffer>) {
-  for (let pos = 0; pos < buffer.length; ) {
-    const tag = buffer[pos++];
-    let length = buffer[pos++];
-    if (0 !== (length & 0x80)) {
-      let extLen = 0;
-      for (let i = 0; i < (length & 0x7f); i += 1) {
-        extLen = (extLen << 8) | (buffer[pos++] & 0xff);
-      }
-      length = extLen;
+function parseASN1(buffer: Buffer, numbers: number[], oids: Buffer[], strings: Buffer[]) {
+    /* tslint:disable:no-bitwise */
+    for (let pos = 0; pos < buffer.length;) {
+        const tag = buffer[pos++];
+        let length = buffer[pos++];
+        if (0 !== (length & 0x80)) {
+            let extLen = 0;
+            for (let i = 0; i < (length & 0x7f); i += 1) {
+                extLen = (extLen << 8) | (buffer[pos++] & 0xff);
+            }
+            length = extLen;
+        }
+        const contents = buffer.subarray(pos, pos + length);
+        pos += length;
+        if (0x30 === tag) {
+            parseASN1(contents, numbers, oids, strings);
+        } else if (0x03 === tag || 0x04 === tag) {
+            strings.push(contents);
+        } else if (0x06 === tag) {
+            oids.push(contents);
+        } else if (0x02 === tag) {
+            numbers.push(_.reduce(contents, (acc, next) => (acc << 8) | (next & 0xff), 0));
+        } else if (0x05 !== tag) {
+            throw Error(`Unexpected ASN.1 tag ${tag}.`);
+        }
     }
-    const contents = buffer.subarray(pos, pos + length);
-    pos += length;
-    if (0x30 === tag) {
-      parseASN1(contents, numbers, oids, strings);
-    } else if (0x03 === tag || 0x04 === tag) {
-      strings.push(contents);
-    } else if (0x06 === tag) {
-      oids.push(contents);
-    } else if (0x02 === tag) {
-      let val = 0;
-      for (let i = 0; i < contents.length; i += 1) {
-        val = (val << 8) | (contents[i] & 0xff);
-      }
-      numbers.push(val);
-    } else if (0x05 !== tag) {
-      throw Error(`Unexpected ASN.1 tag ${tag}.`);
-    }
-  }
+    /* tslint:enable:no-bitwise */
 }
 
 /**
@@ -45,22 +44,23 @@ function parseASN1(buffer: Buffer, numbers: Array<number>, oids: Array<Buffer>, 
  * strings by index within the file.
  */
 export class ASN1Contents {
-  private constructor(
-    public readonly numbers: Array<number>,
-    public readonly oids: Array<Buffer>,
-    public readonly strings: Array<Buffer>,
-  ) {}
+    private constructor(
+        public readonly numbers: number[],
+        public readonly oids: Buffer[],
+        public readonly strings: Buffer[],
+    ) {
+    }
 
-  /**
-   * Parse ASN.1 data from an existing buffer.
-   *
-   * @param buffer the ASN.1 buffer to parse.
-   */
-  static fromBuffer(buffer: Buffer) {
-    const numbers: Array<number> = [];
-    const oids: Array<Buffer> = [];
-    const strings: Array<Buffer> = [];
-    parseASN1(buffer, numbers, oids, strings);
-    return freeze(new ASN1Contents(numbers, oids, strings));
-  }
+    /**
+     * Parse ASN.1 data from an existing buffer.
+     *
+     * @param buffer the ASN.1 buffer to parse.
+     */
+    static fromBuffer(buffer: Buffer) {
+        const numbers: number[] = [];
+        const oids: Buffer[] = [];
+        const strings: Buffer[] = [];
+        parseASN1(buffer, numbers, oids, strings);
+        return freeze(new ASN1Contents(numbers, oids, strings));
+    }
 }
