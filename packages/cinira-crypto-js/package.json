@@ -8,12 +8,13 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.196",
+    "@types/lodash": "^4.14.197",
     "@types/jest": "^29.5.3",
     "jest": "^29.6.2",
     "jest-environment-jsdom": "^29.6.2",
     "jest-junit": "^16.0.0",
-    "semantic-release": "^21.0.7",
+    "prettier": "^3.0.2",
+    "semantic-release": "^21.0.9",
     "ts-jest": "^29.1.1",
     "typescript": "^5.1.6"
   },
@@ -37,9 +38,12 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "tsc --build --clean",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
     "test": "jest",
+    "prepare": "npm run build",
     "postversion": "node ./postversion.js",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test && npm run lint"
   },
   "jest": {
     "preset": "ts-jest"

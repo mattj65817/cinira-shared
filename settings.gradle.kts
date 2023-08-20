@@ -14,5 +14,5 @@ plugins {
 rootProject.name = "Cinira Shared Libraries"
 
 include(
-    "modules:cinira-crypto-java"
+    "packages:cinira-crypto-java"
 )
