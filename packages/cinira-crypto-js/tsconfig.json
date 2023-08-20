@@ -1,26 +1,21 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "module": "esnext",
+    "target": "es2020",
+    "strict": true,
+    "preserveConstEnums": true,
+    "rootDir": "./src",
+    "sourceMap": true,
+    "module": "es2020",
     "moduleResolution": "node",
-    "noEmit": true,
-    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "strict": false,
-    "target": "esnext"
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
   },
-  "include": [
-    "./src/**/*.ts"
-  ],
   "exclude": [
-    "./node_modules"
+    "node_modules",
+    "__tests__/**/*.test.ts"
   ]
 }
