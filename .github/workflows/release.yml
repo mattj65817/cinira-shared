@@ -29,11 +29,11 @@ jobs:
         with:
           node-version: "lts/*"
       - run: npm install
-        working-directory: ./packages/cinira-crypto-js
+        working-directory: ./packages/cin-crypto-js
       - run: npm audit signatures
-        working-directory: ./packages/cinira-crypto-js
+        working-directory: ./packages/cin-crypto-js
       - run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ./packages/cinira-crypto-js
+        working-directory: ./packages/cin-crypto-js
