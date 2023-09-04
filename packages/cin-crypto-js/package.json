@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Cinira shared crypto library for JavaScript",
   "files": [
-    "./build/lib"
+    "./build"
   ],
-  "main": "./build/lib/cjs/index.js",
-  "module": "./build/lib/esm/index.js",
+  "main": "./build/cjs/index.js",
+  "module": "./build/esm/index.js",
   "repository": "https://github.com/mattj65817/cinira-shared.git",
   "scripts": {
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
@@ -36,13 +36,13 @@
         "@semantic-release/npm",
         {
           "npmPublish": false,
-          "tarballDir": "./build/dist"
+          "tarballDir": "./build"
         }
       ],
       [
         "@semantic-release/github",
         {
-          "assets": "./build/dist/*.tgz"
+          "assets": "./build/*.tgz"
         }
       ]
     ]
